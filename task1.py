@@ -18,11 +18,11 @@ print(min(len(df_X_train) - df_X_train.count()))
 print(max(len(df_X_train) - df_X_train.count()))
 
 #How can I remove from the DataFrame all the columns with more that NaN% and also getting the name of these lines?
-#Is it a correct approach?
+#Is it a correct approach or there is another one?
 #df_tesolinto = df_X_test
 #for row in df_X_train:
 #    if (len(df_X_train) - df_X_train.count() > 100)
-#        df_tesolinto = df_tesolinto(df.drop('column_name', 1))
+#       df_tesolinto = df_tesolinto(df.drop('column_name', 1))
 
 
 
