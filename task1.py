@@ -1,9 +1,12 @@
 import pandas as pd
-
+from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import r2_score
 from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.ensemble import IsolationForest
+import numpy as np
 
 
 #Is there a way to reduces the number of lines ?
@@ -17,20 +20,30 @@ df_X_test = df_X_test[df_X_test.columns[1:]]
 print(min(len(df_X_train) - df_X_train.count()))
 print(max(len(df_X_train) - df_X_train.count()))
 
-#How can I remove from the DataFrame all the columns with more that NaN% and also getting the name of these lines?
-#Is it a correct approach or there is another one?
-#df_tesolinto = df_X_test
-#for row in df_X_train:
-#    if (len(df_X_train) - df_X_train.count() > 100)
-#       df_tesolinto = df_tesolinto(df.drop('column_name', 1))
+import math
+
+percentages = []
+n = 15 #select n
+
+for i in range(0 ,len(df_X_train['x23'])):
+    count = 0
+    row = df_X_train.iloc[i]
+    # row [a,b,c]
+    # row[0] ==> a
+    # print(row[0],row[1],row[2])
+    for element in row:
+        if math.isnan(element):
+            count += 1
+    len_of_row = len(df_X_train.iloc[i])
+    percentage = (count/len_of_row)*100
+    percentages.append(percentage)
+
+percentages = np.array(percentages)
+print('There are {} rows for which NaN is greater than {}. They will be dropped'.format(np.sum(percentages>n),n))
+df_X_train.drop(index=df_X_train[percentages > n].index, inplace=True)
+df_y_train.drop(index=df_y_train[percentages > n].index, inplace=True)
 
 
-
-
-#Eliminating rows that have NaN, how to do that?
-#df_X_train_epurated = df_X_train[df_X_train != np.nan] #thiscommanddoesnotwork why
-#df_X_train_epurated = df_X_train.dropna()
-#print(df_X_train_epurated) #result Nan --> means that all the row have at least one element missing :O
 df_X_train_average = df_X_train.fillna(df_X_train.mean())
 df_X_test_average = df_X_test.fillna(df_X_test.mean())
 print(df_X_train_average)
@@ -51,7 +64,7 @@ grid.fit(df_X_train_average_scaled, df_y_train)
 
 
 #Results
-df_result = pd.Series(grid.predict(df_X_test_average_scaled))
+df_result = pd.DataFrame(grid.predict(df_X_test_average_scaled))
 print(grid.best_params_)
 
 #Writing to a csv file
